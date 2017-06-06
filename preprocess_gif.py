@@ -45,13 +45,11 @@ def create_frame_list(gif_path, train_mode):
 	else:
 		return None		
 	
-def preprocess_frame(train_mode=True)
+def frame_preprocessing(train_mode=True)
 	# feed each frame to cnn
 	dataset_li = create_gif_list(train_mode)
 	frame_list = []
 	for gif_path in dataset_li:
 		frame_list = create_frame_list(gif_path, train_mode)
-		
-	
-	
-	
+		for frame in frame_list:
+			preprocess_image(frame, height=227, width=227, )
