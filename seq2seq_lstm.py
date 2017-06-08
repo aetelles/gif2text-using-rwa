@@ -40,8 +40,8 @@ class gif_describe():
         caption = tf.placeholder(tf.int32, [self.batch_size, self.n_lstm_steps])
         caption_mask = tf.placeholder(tf.float32, [self.batch_size, self.n_lstm_steps])
 
-        gif_flat = tf.reshape(video, [-1, self.dim_image])
-        image_emb = tf.nn.xw_plus_b(video_flat, self.encode_image_W,
+        gif_flat = tf.reshape(gif, [-1, self.dim_image])
+        image_emb = tf.nn.xw_plus_b(gif_flat, self.encode_image_W,
                                     self.encode_image_b)  # (batch_size*n_lstm_steps, dim_hidden)
         image_emb = tf.reshape(image_emb, [self.batch_size, self.n_lstm_steps, self.dim_hidden])
 
@@ -96,13 +96,13 @@ class gif_describe():
             loss += current_loss
 
         loss = loss / tf.reduce_sum(caption_mask)
-        return loss, video, video_mask, caption, caption_mask, probs
+        return loss, gif, gif_mask, caption, caption_mask, probs
 
     def build_generator(self):
-        video = tf.placeholder(tf.float32, [1, self.n_lstm_steps, self.dim_image])
-        video_mask = tf.placeholder(tf.float32, [1, self.n_lstm_steps])
+        gif = tf.placeholder(tf.float32, [1, self.n_lstm_steps, self.dim_image])
+        gif_mask = tf.placeholder(tf.float32, [1, self.n_lstm_steps])
 
-        video_flat = tf.reshape(video, [-1, self.dim_image])
+        gif_flat = tf.reshape(gif, [-1, self.dim_image])
         image_emb = tf.nn.xw_plus_b(video_flat, self.encode_image_W, self.encode_image_b)
         image_emb = tf.reshape(image_emb, [1, self.n_lstm_steps, self.dim_hidden])
 
@@ -195,7 +195,7 @@ def train():
     train_set, _ = create_dataframe()
     wordtoix, ixtoword, bias_init_vector = preProBuildWordVocab(train_set['description'], word_count_threshold)
 
-    np.save('./data/ixtoword', ixtoword)
+    np.save('./output/data/ixtoword', ixtoword)
 
     model = gif_describe(dim_image=dim_image, n_words=len(wordtoix), dim_hidden=dim_hidden,
                          batch_size=batch_size, bias_init_vector=bias_init_vector)
@@ -245,8 +245,8 @@ def train():
             _, loss_val = sess.run(
                 [train_op, tf_loss],
                 feed_dict={
-                    tf_video: current_feats,
-                    tf_video_mask: current_video_masks,
+                    tf_gif: current_feats,
+                    tf_gif_mask: current_gif_masks,
                     tf_caption: current_caption_matrix,
                     tf_caption_mask: current_caption_masks
                 })
@@ -293,13 +293,3 @@ def test(model_path='models/model-900', gif_feat_path=gif_feat_path):
         ipdb.set_trace()
 
     ipdb.set_trace()
-
-def main():
-    '''
-    after downloading gifs
-    preprocess using cnn
-    thru network 
-    ye boi
-    '''
-
-    return
