@@ -7,7 +7,7 @@ import os
 
 from tensorflow.models.rnn import rnn_cell
 from keras.preprocessing import sequence
-from preprocess_gif import create_gif_list, create_dataframe
+from preprocess_gif import create_dataframe, create_gif_list, preprocess_frame
 # surprise lol you gotta install keras :D
 
 class gif_describe():
@@ -34,13 +34,13 @@ class gif_describe():
             self.embed_word_b = tf.Variable(tf.zeros([n_words]), name='embed_word_b')
 
     def build_model(self):
-        video = tf.placeholder(tf.float32, [self.batch_size, self.n_lstm_steps, self.dim_image])
-        video_mask = tf.placeholder(tf.float32, [self.batch_size, self.n_lstm_steps])
+        gif = tf.placeholder(tf.float32, [self.batch_size, self.n_lstm_steps, self.dim_image])
+        gif_mask = tf.placeholder(tf.float32, [self.batch_size, self.n_lstm_steps])
 
         caption = tf.placeholder(tf.int32, [self.batch_size, self.n_lstm_steps])
         caption_mask = tf.placeholder(tf.float32, [self.batch_size, self.n_lstm_steps])
 
-        video_flat = tf.reshape(video, [-1, self.dim_image])
+        gif_flat = tf.reshape(video, [-1, self.dim_image])
         image_emb = tf.nn.xw_plus_b(video_flat, self.encode_image_W,
                                     self.encode_image_b)  # (batch_size*n_lstm_steps, dim_hidden)
         image_emb = tf.reshape(image_emb, [self.batch_size, self.n_lstm_steps, self.dim_hidden])
@@ -293,3 +293,13 @@ def test(model_path='models/model-900', gif_feat_path=gif_feat_path):
         ipdb.set_trace()
 
     ipdb.set_trace()
+
+def main():
+    '''
+    after downloading gifs
+    preprocess using cnn
+    thru network 
+    ye boi
+    '''
+
+    return
