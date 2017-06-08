@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 import numpy as np
+import preprocess_gif
 from inception_resnet_v2 import inception_resnet_v2, inception_resnet_v2_arg_scope
 
 slim = tf.contrib.slim
@@ -28,9 +29,9 @@ class CNN_inception(object):
         self.saver.restore(sess, 'inception_resnet_v2_resnet_v2_2016_08_30.ckpt')
         print("Pre-trained Inception ResNet V2 is succesfully loaded!")
 
-        return
+        return logits, endpoints
 
-    def extract_features(self, image_list, layer_sizes=[256]):
+    def extract_features(self, end_points, image_list, layer_sizes=[256]):
         print("Extracting features using CNN...")
         iter_until = len(image_list) + self.batch_size
         print("CNN will iterate until", iter_until)
@@ -42,7 +43,7 @@ class CNN_inception(object):
             image_batch = image_list[start:end]
 
             cnn_in = np.zeros(np.array(image_batch.shape)[[0, 3, 1, 2]], dtype=np.float32)
-
+        # aaagghhh gad i am so lost
             for idx in enumerate(image_batch):
                 cnn_in[idx] = end_points['Logits']
                 output[idx] = sess.run(cnn_in[idx], feed_dict={X: image_batch})
