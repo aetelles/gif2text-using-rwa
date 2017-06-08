@@ -18,11 +18,12 @@ from __future__ import print_function
 import pandas as pd
 import requests
 import os
+import argparse
 from PIL import Image
 from io import BytesIO
 
 dataset_url = 'https://raw.githubusercontent.com/raingo/TGIF-Release/master/data/tgif-v1.0.tsv'
-save_path = './tgif_dataset/'
+save_path = '/output/tgif_dataset/'
 train_ratio = 0.9
 debug = True # this will be changed to false once the real training begins
 # During the creation of this code, I used a smaller dataset for debugging
@@ -86,7 +87,8 @@ def dl_process_data(save_path, row, debug):
     return
 
 def main():
-    # access dataset and save into a dataframe
+#    if not os.path.exists(output):
+#        os.path.makedir(output)
     if debug == False:
         print("not in debug mode. Accessing original dataset...")
         response = requests.get(dataset_url)
@@ -114,5 +116,8 @@ def main():
     return
 
 if __name__ == "__main__":
-    main()
-
+#	parser = argparse.ArgumentParser()
+#	parser.add_argument('--output', type=str)
+#	args = parser.parse_args()
+#	main(args.output)
+	main()
