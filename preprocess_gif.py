@@ -3,7 +3,7 @@ import pandas as pd
 import tensorflow as tf
 import os
 from PIL import Image
-import ipdb
+#import ipdb
 import pprint
 
 from inception_preprocessing import preprocess_image, preprocess_for_eval
@@ -82,60 +82,27 @@ def preprocess_frame(frame_path, gif_path, train_mode):
 		gif_path = os.path.join(train_path, gif_path)
 	else:
 		gif_path = os.path.join(test_path, gif_path)
-	# queue of all frames 
 	frame_path = os.path.join(gif_path, frame_path)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	frame_queue = tf.train.string_input_producer([frame_path])
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	frame_reader = tf.WholeFileReader()
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	_, frame_file = frame_reader.read(frame_queue)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	frame = tf.image.decode_png(frame_file, channels=3)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	with tf.Session() as sess:
-#		ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-		tf.global_variables_initializer().run()
-		image_tensor = sess.run([frame])
-		print(image_tensor)
-		# hello ajet end the code at this point :)
-#		ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	return image_tensor
+	frame_contents = tf.read_file(frame_path)
+	print(frame_contents)
+	frame_tensor = tf.image.decode_png(frame_contents)
+	print(frame_tensor)
+	# print input tensor shape??
+	print("frame tensor shape:",frame_tensor.get_shape())
+	# print tensor everytime it's modified
+#	resized_frame = tf.image.resize_images(frame_tensor,299,299)
+	frame_tensor = tf.reshape(frame_tensor, (299,299,3)) 
+#	frame_tensor = 2*(frame_tensor/tf.cast(255.0,tf.uint8))-tf.cast(1.0,tf.uint8)
+	frame_tensor = preprocess_for_eval(frame_tensor, height=227, width=227)
+#	frame_tensor = tf.cast(frame_tensor, uint8)
 	
-
-#def preprocess_frame(frame_path, gif_path, train_mode):
-#	if train_mode == True:
-#		gif_path = os.path.join(train_path, gif_path)
-#	else:
-#		gif_path = os.path.join(test_path, gif_path)
-#	frame_path = os.path.join(gif_path, frame_path)
-#	image = Image.open(frame_path)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-#	image = tf.image.decode_png(image, channels=3)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-#	resized_frame = tf.image.resize_images(image,299,299)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	
-#	frame_path = os.path.join(gif_path, frame_file)
-	
-#	frame = Image.open(frame_path).resize((299,299))
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-#	frame = np.array(frame)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-#	frame = frame.reshape(-1, 299, 299, 3) # reshape into 3d tensor
-#	frame = 2*(frame/255.0)-1.0 # normalization???
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-#	frame = preprocess_for_eval(frame,height=227,width=227)
-#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
-	# consider changing above function to preprocess_for_training
-	# not really sure because preprocessing might be doubled
-	# anyway it crops the frame i think lol
-	return frame
+	return frame_tensor
 
 def main():
 	print("Hello! We're preprocessing the frames by extracting their features through CNN. :)")
 	num_frames = 70
 	cnn = CNN_inception(batch_size=20, height=227, width=227, channels=3)
+	print("Initialized inception resnet v3 class")
 	train_list = create_gif_list(train_mode=True)
 	test_list = create_gif_list(train_mode=False)
 	list_set = [train_list, test_list]
@@ -185,5 +152,5 @@ def main():
 	return
 
 if __name__=="__main__":
-	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
+#	ipdb.set_trace(context=7) # BREAKPOINT (for debugging)
 	main()
