@@ -20,13 +20,13 @@ class CNN_inception(object):
     def load_cnn(self):
         print("Loading pre-trained Inception ResNet V2...")
         # function loads the pretrained inception resnet v2 model
-        X = tf.placeholder(tf.float32, shape=[None, height, width, channels])
+        X = tf.placeholder(tf.float32, shape=[None, self.height, self.width, self.channels])
         with slim.arg_scope(inception_resnet_v2_arg_scope()):
             logits, end_points = inception_resnet_v2(X, num_classes=1001, is_training=False)
         # initialize network with checkpoint file
         self.saver = tf.train.Saver()
-        sess = tf.Session()
-        self.saver.restore(sess, '/ckpt/inception_resnet_v2_resnet_v2_2016_08_30.ckpt')
+        self.sess = tf.Session()
+        self.saver.restore(self.sess, '/ckpt/inception_resnet_v2_2016_08_30.ckpt')
         print("Pre-trained Inception ResNet V2 is succesfully loaded!")
         
         return sess
@@ -37,7 +37,7 @@ class CNN_inception(object):
         iter_until = len(image_list) + self.batch_size
         print("CNN will iterate until", iter_until)
         all_features = np.zeros([len(image_list)] + layer_sizes)
-        sess = load_cnn() # if error, try to change this into CNN_inception.load_cnn()
+        sess = self.load_cnn() # if error, try to change this into CNN_inception.load_cnn()
         
         for start, end in zip(range(0, iter_until, self.batch_size),
                               range(self.batch_size, iter_until, self.batch_size)):
